@@ -47,8 +47,15 @@ displayTwoImages(X_large, X)
 
 #%% Exercice 1 : Convolution
 def convolution1D(X,F):
-    # A compléter
-    return
+    N = len(X)
+    H = len(F)
+    Z = []
+    for i in range(N-H+1):
+       somme = 0
+       for j in range(H):
+          somme += X[i+H-(j+1)]*F[j]
+       Z.append(somme)
+    return Z
 
 #%% Test des fonctions
 # Definitions des donnees
@@ -64,13 +71,13 @@ F_3_inv = [2,1,0]
 
 # Ces lignes permettent de tester les fonctions de convolutions
 # # Convolution avec F_1
-# print("Convolution avec F_1 = [1,2,1] et F_1_norm = [0.25,0.5,0.25] :")
-# print("Convolution X_1*F_1 : ", convolution1D(X_1, F_1)) #[80, 0, 0, 0, 80]
-# print("Convolution X_1*F_1_norm : ", convolution1D(X_1, F_1_norm)) # [20.0, 0.0, 0.0, 0.0, 20.0]
-# print("Convolution X_2*F_1 : ", convolution1D(X_2, F_1)) #[110, 40, 20, 40, 110]
-# print("Convolution X_2*F_1_norm : ", convolution1D(X_2, F_1_norm)) #[27.5, 10.0, 5.0, 10.0, 27.5]
-# print("Convolution X_3*F_1 : ", convolution1D(X_3, F_1)) #[80, 120, 170, 230, 280]
-# print("Convolution X_3*F_1_norm : ", convolution1D(X_3, F_1_norm),'\n') #[20.0, 30.0, 42.5, 57.5, 70.0]
+print("Convolution avec F_1 = [1,2,1] et F_1_norm = [0.25,0.5,0.25] :")
+print("Convolution X_1*F_1 : ", convolution1D(X_1, F_1)) #[80, 0, 0, 0, 80]
+print("Convolution X_1*F_1_norm : ", convolution1D(X_1, F_1_norm)) # [20.0, 0.0, 0.0, 0.0, 20.0]
+print("Convolution X_2*F_1 : ", convolution1D(X_2, F_1)) #[110, 40, 20, 40, 110]
+print("Convolution X_2*F_1_norm : ", convolution1D(X_2, F_1_norm)) #[27.5, 10.0, 5.0, 10.0, 27.5]
+print("Convolution X_3*F_1 : ", convolution1D(X_3, F_1)) #[80, 120, 170, 230, 280]
+print("Convolution X_3*F_1_norm : ", convolution1D(X_3, F_1_norm),'\n') #[20.0, 30.0, 42.5, 57.5, 70.0]
 
 # # Convolution avec F_2
 # print("Convolution avec F_2 = [-1,2,-1]") #[-1,2,-1]
@@ -88,8 +95,32 @@ F_3_inv = [2,1,0]
 
 #%% Exercice 2 : Convolution 2D
 def convolution_2D(X, F):
-    # A compléter
-    return
+    Dx, Dy = X.shape
+    Hx, Hy = F.shape
+    Z = np.zeros((Dx-Hx+1, Dy-Hy+1))
+    for i in range(Dx-Hx+1):
+           for j in range(Dy-Hy+1):
+                somme = 0
+                for k in range(Hx):
+                    for l in range(Hy):
+                        somme += X[i+Hx-(k+1),j+Hy-(l+1)]*F[k,l]
+                Z[i,j] = somme      
+    return Z
+
+
+def applique_filtre(X, F):
+    Dx, Dy = X.shape
+    Hx, Hy = F.shape
+    Z = np.zeros((Dx, Dy))
+    for i in range(Dx):
+           for j in range(Dy):
+                somme = 0
+                for k in range(Hx):
+                    for l in range(Hy):
+                        if i+Hx-(k+1) >= 0 and i+Hx-(k+1) < Dx and j+Hy-(l+1) >= 0 and j+Hy-(l+1) < Dy:
+                            somme += X[i+Hx-(k+1),j+Hy-(l+1)]*F[k,l]
+                Z[i,j] = somme      
+    return Z
 
 #%% Filtres à tester sur l'image X qui est obtenue par pooling l'image originale X_large
 
