@@ -109,18 +109,8 @@ def convolution_2D(X, F):
 
 
 def applique_filtre(X, F):
-    Dx, Dy = X.shape
-    Hx, Hy = F.shape
-    Z = np.zeros((Dx, Dy))
-    for i in range(Dx):
-           for j in range(Dy):
-                somme = 0
-                for k in range(Hx):
-                    for l in range(Hy):
-                        if i+Hx-(k+1) >= 0 and i+Hx-(k+1) < Dx and j+Hy-(l+1) >= 0 and j+Hy-(l+1) < Dy:
-                            somme += X[i+Hx-(k+1),j+Hy-(l+1)]*F[k,l]
-                Z[i,j] = somme      
-    return Z
+    Z = convolution_2D(X, F)
+    displayTwoImages(X, Z)
 
 #%% Filtres à tester sur l'image X qui est obtenue par pooling l'image originale X_large
 
@@ -163,10 +153,19 @@ filtre_8 = np.array([[-1, -1, -1],
                      [-1, -1, -1]])
 
 
-Filtre_9 = np.array([[0, 0, -1, 0, 0],
+filtre_9 = np.array([[0, 0, -1, 0, 0],
                      [0, 0, -1, 0, 0],
                      [-1, -1, 10, -1, -1],
                      [0, 0, -1, 0, 0],
                      [0, 0, -1, 0, 0]])
 
+applique_filtre(X, filtre1)
+applique_filtre(X, filtre2)
+applique_filtre(X, filtre3)
+applique_filtre(X, filtre4)
+applique_filtre(X, filtre5)
+applique_filtre(X, filtre6)
+applique_filtre(X, filtre7)
+applique_filtre(X, filtre8)
+applique_filtre(X, filtre9)
 
