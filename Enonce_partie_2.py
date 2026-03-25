@@ -98,11 +98,11 @@ def updateWb(W, b, X, Y, T, lr):
     Nabla_b = (Y-T).sum(axis=0)
     b -= lr * Nabla_b
 
-def taux_precision(C, T):
+def taux_precision(Y, T):
     nb_pt = 0
-    for i in range(C.shape[0]):
-        for j in range(C.shape[1]):
-            if C[i,j] == T[i,j]:
+    for i in range(Y.shape[0]):
+        for j in range(Y.shape[1]):
+            if Y[i,j] == 1 and T[i,j] == 1:
                 nb_pt += 1
     return nb_pt / len(C)
 
