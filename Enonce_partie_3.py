@@ -159,13 +159,13 @@ filtre_9 = np.array([[0, 0, -1, 0, 0],
                      [0, 0, -1, 0, 0],
                      [0, 0, -1, 0, 0]])
 
-applique_filtre(X, filtre1)
-applique_filtre(X, filtre2)
-applique_filtre(X, filtre3)
-applique_filtre(X, filtre4)
-applique_filtre(X, filtre5)
-applique_filtre(X, filtre6)
-applique_filtre(X, filtre7)
-applique_filtre(X, filtre8)
-applique_filtre(X, filtre9)
+applique_filtre(X, filtre_1)
+applique_filtre(X, filtre_2)
+applique_filtre(X, filtre_3)
+applique_filtre(X, filtre_4)
+applique_filtre(X, filtre_5)
+applique_filtre(X, filtre_6)
+applique_filtre(X, filtre_7)
+applique_filtre(X, filtre_8)
+applique_filtre(X, filtre_9)
 
