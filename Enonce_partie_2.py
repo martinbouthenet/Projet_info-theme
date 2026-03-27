@@ -88,7 +88,7 @@ def regression_logistique(W, b, X, Y, T, lr=0.1, nb_iter=100, int_affiche=10):
     return suite_erreur
     
 def initialise(D, K, X):
-    W = np.random.uniform(-2, 2, size=(D, K))
+    W = np.random.uniform(-2, 2, size=(D, K)) #On initialise la matrice W de tzille (D,K)
     b = np.random.uniform(size=K)
     Y = predit_proba(X, W, b)
     print(Y.shape)
@@ -96,6 +96,7 @@ def initialise(D, K, X):
     return W, b, Y, C_train
     
 def cross_entropy(Y, T):
+    """On calcule l'erreur d'entropie avec la formule donné par l'énoncé"""
     J = 0
     N = T.shape[0]
     K = T.shape[1]
@@ -263,7 +264,18 @@ print("Poids optimises :", W, b)
 print("Erreur d'entropie finale :", suite_erreur[-1])
 print("Taux de précision final = ", taux_precision(C_train_final, T))
 
-
+x = np.linspace(-6, 6, 13)#On définit x une liste de -6 à 6 avec 13 éléments 
+y = np.linspace(-6, 6, 13)
+plt.scatter(X_train[:, 0], X_train[:, 1], c=T_train, s=30)
+for i in range(K) :
+    for j in range(i+1,K) :
+        w = W[:,i] - W[:,j] 
+        B = b[i] - b[j]
+        f = - (w[0]*x + B) / (w[1])
+        plt.plot(x,f)
+plt.ylim(-6, 6) #On limite l'axe des y de -6 à 6
+plt.show()
+        
 # Exercice 3 
 # %% Import du jeu de données : probleme à 6 classes
 X_train, T_train = readdataset2d("probleme_5_classes_dur")
