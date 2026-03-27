@@ -14,44 +14,66 @@ def readdataset2d(fname):
 
 #%% Import du jeu de données d'entrainement
 X_train, T_train = readdataset2d("nuage_train_exercice_1") # dataset 1
-# X_train, T_train = readdataset2d("forme_exercice_1") # dataset 2
+#X_train, T_train = readdataset2d("forme_train_exercice_1") # dataset 2
 N, D = X_train.shape
 plt.scatter(X_train[:,0], X_train[:,1], c=T_train, s = 10)
 
 #%% Import du jeu de données de test
 X_test, T_test = readdataset2d("nuage_test_exercice_1") # dataset 1
-# X_test, T_test = readdataset2d("forme_test_exercice_1") # dataset 2
+#X_test, T_test = readdataset2d("forme_test_exercice_1") # dataset 2
 N, D = X_test.shape
 plt.scatter(X_test[:,0], X_test[:,1], c=T_test, s = 10)
 
-#%%
+#%% Définition du réseau de neurones
 def sigma(x):
     return 1/(1+np.exp(-x))
 
 def predit_classe(Y):
+    '''
+    Utilisée pour transformer une matrice ligne de coefficients
+    compris entre 0 et 1 en une matrice ligne de même taille contenant 
+    des 0 et des 1 en arrondissant la matrice de départ
+    '''
     return np.round(Y)
 
 def taux_precision(C, T):
+    '''
+    prends en argument deux matrices de même taille et renvoi en 
+    pourcentage, le nombre de coefficients égaux
+    '''
+    assert len(C) == len(T), 'les matrices C et T sont de tailles différentes'
     N = len(T)
     return np.sum(np.equal(T, C))*100/N
 
 def cross_entropy(Y,T):
+
+    '''
+    utilisée pour renvoyer la matrice d'erreur d'entropie à partir
+    des matrices des prédictions et des classes réelles prises en entrée
+    '''
+    assert len(Y) == len(T), 'les matrices Y et T sont de tailles différentes'
     N = len(Y)
     J = 0
     for i in range(N):
-        if T[i] == 1:
-            if np.log(Y[i]) == 0.0:
+        if T[i] == 1:   #Si T[i]=1, 1-T[i]=0 donc il faut enlever seulement ln(Y[i])
+            
+            if Y[i] == 0.0:   #On passe si Y[i]=0 car on ne pourra pas prendre le ln
                 continue
             else :
                 J -= np.log(Y[i])
-        else :
-            if np.log(1-Y[i]) == 0.0:
+        else :    # si T[i] n'est pas 1 c'est qu'il vaut 0 car T ne contient que des 0 et des 1, il faut alors enlever ln(1-Y[i])
+            if Y[i] == 1.0: # de meme on passe si 1-Y[i]=0
                 continue
             else :
                 J -= np.log(1-Y[i])
     return J
 
 def affichage(X, T, C):
+    '''
+    Prends en paramètres les points, leur classe et leur prédiction et
+    affiche à coté les points avec leur réele classe et les points avec
+    leur classe prédite
+    '''
     fig,ax = plt.subplots(1,2, figsize = (15,7))
     # Affichage des vrais classes
     ax[0].scatter(X[:,0], X[:,1], c=T, s = 40)
@@ -63,14 +85,25 @@ def affichage(X, T, C):
     plt.show()
 
 def predit_proba(X, W, b):
-    Z = [X]
+    '''
+    Prends en paramètres X la liste des points, W la liste de tout les
+    paramètres Wi et b la liste de tout les paramètres bi.
+    Renvoie Z la liste de toutes les données intermédiares Zi et 
+    Y la prédiction de la classe des points X avec les paramètres W et b
+    '''
+    Z = [X]     #On met X au début de Z pour pouvoir itérer sur Z et commencer par X
     for i in range (len(b)-1):
         Z.append(sigma(Z[-1].dot(W[i])+b[i]))
     Y = sigma(Z[-1].dot(W[-1]) + b[-1])
-    Z.remove(X)
+    Z.remove(X)     #On suprimme le X qu'on avait rajouté pour le programme mais qui n'a pas lieu d'être là
     return Z, Y
 
 def initialise(dimensions):
+    '''
+    Avec la liste dimensions, on défini des liste W et b aléatoires 
+    avec des Wi et bi de la bonne taille et avec des scalaires entre
+    -2 et 2 pour les Wi et entre -0.5 et 0.5 pour les bi
+    '''
     # Initialise les poids W et b
     W=[]
     b=[]
@@ -79,7 +112,8 @@ def initialise(dimensions):
         b.append(np.random.uniform(-0.5, 0.5, size=(dimensions[i+1])))
 
 
-    # Initialisation les prediction Y et C
+    # Initialisation les prediction Y et C on pourra passer de X_train à 
+    #X_test en commentant la prochaine ligne et décommentant celle d'après 
     Z, Y = predit_proba(X_train, W, b)
     #Z, Y = predit_proba(X_test, W, b)
     C = predit_classe(Y)
@@ -122,8 +156,8 @@ for i in range (8):
     W_init = W.copy()
     b_init = b
 
-    suite_erreur = reseau(W, b, X_train, Z_train, Y_train, T_train, lr=0.001, nb_iter = 10000, int_affiche=100)
-    #suite_erreur = reseau(W, b, X_test, Z_train, Y_train, T_test, lr=0.001, nb_iter = 10000, int_affiche=100)
+    suite_erreur = reseau(W, b, X_train, Z_train, Y_train, T_train, lr=0.001, nb_iter = 100000, int_affiche=1000)
+    #suite_erreur = reseau(W, b, X_test, Z_train, Y_train, T_test, lr=0.00001, nb_iter = 100, int_affiche=10)
     C_train_final = predit_classe(Y_train)
 
     print('\nSituation initiale')
