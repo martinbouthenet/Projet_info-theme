@@ -41,6 +41,8 @@ def convertit(T, K):
     return T_convertit
 # %% QUESTION 3
 def softmax(A):
+    """Fonction qui prend en argument une matrice A de taille (n,p) et 
+    renvoie une matrice B tel que chaque ligne i de B soit le softmax de la ligne i de A"""
     n, p = A.shape
     B = np.zeros((n, p))
     for i in range(n):
@@ -53,10 +55,13 @@ def softmax(A):
 
 # %% Question 4
 def predit_proba(X, W, b):
+    """On utilise la relation donné par l'énoncé 
+    pour obtenir la matrice de prédiction Y"""
     return softmax(np.dot(X, W) + b)
 
 # %% Question 5
 def predit_classe(Y):
+    """Pour obtenir la matrice C on utilise le principe énoncé en question 5"""
     n, p = Y.shape
     C = np.zeros((n, p))
     l_max = Y.max(axis=1)
@@ -79,8 +84,6 @@ def regression_logistique(W, b, X, Y, T, lr=0.1, nb_iter=100, int_affiche=10):
         if n % int_affiche == 0:
             suite_erreur.append(cross_entropy(Y, T))
     return suite_erreur
-
-# Exercice 3
 def initialise(D, K, X):
     W = np.random.uniform(-2, 2, size=(D, K))
     b = np.random.uniform(size=K)
@@ -110,17 +113,7 @@ def taux_precision(Y, T):
                 nb_pt += 1
     return nb_pt / len(Y)
 
-def convertit(T, K=5):
-    N = T.shape[0]
-    T_convertit = np.zeros((N, K))
-    for i in range(N):
-        for j in range(K):
-            if T[i, 0] == j:
-                T_convertit[i, j] = 1
-            else:
-                T_convertit[i, j] = 0
-    return T_convertit
-
+# Exercice 3
 def sigma(x):
     return 1/(1+np.exp(-x))
 
