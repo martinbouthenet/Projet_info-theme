@@ -107,7 +107,7 @@ def cross_entropy(Y, T):
 def updateWb(W, b, X, Y, T, lr):
     Nabla_W = np.dot(np.transpose(X), (Y-T))
     W[:] = W - lr * Nabla_W
-    Nabla_b = (Y-T).sum(axis=0)
+    Nabla_b = (Y-T).sum(axis=0)#On prend en compte la nouvelle dimension de b 
     b -= lr * Nabla_b
 
 def taux_precision(Y, T):
