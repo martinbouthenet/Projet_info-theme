@@ -14,7 +14,7 @@ def readdataset2d(fname):
 # %% Fonction convertit de la question 2
 def nb_classes(T):
     """
-    fonction auxiliaire permettant de compter le nombre de classes du nuage de points
+    Fonction auxiliaire permettant de compter le nombre de classes du nuage de points
     au lieu de le faire directement dans la fonction convertit
     """
     K = 0
@@ -75,6 +75,8 @@ def predit_classe(Y):
 
 # %% Question 6
 def regression_logistique(W, b, X, Y, T, lr=0.1, nb_iter=100, int_affiche=10):
+    """On applique l'algorithme de la regression logistique avec notre
+    fonction predit_proba, updateWb et cross_entropy"""
     suite_erreur = []
     n = 0
     while n < nb_iter:
@@ -84,6 +86,7 @@ def regression_logistique(W, b, X, Y, T, lr=0.1, nb_iter=100, int_affiche=10):
         if n % int_affiche == 0:
             suite_erreur.append(cross_entropy(Y, T))
     return suite_erreur
+    
 def initialise(D, K, X):
     W = np.random.uniform(-2, 2, size=(D, K))
     b = np.random.uniform(size=K)
@@ -91,6 +94,7 @@ def initialise(D, K, X):
     print(Y.shape)
     C_train = predit_classe(Y)
     return W, b, Y, C_train
+    
 def cross_entropy(Y, T):
     J = 0
     N = T.shape[0]
@@ -99,6 +103,7 @@ def cross_entropy(Y, T):
         for k in range(K):
             J += T[n, k] * np.log(Y[n, k])
     return -J
+    
 def updateWb(W, b, X, Y, T, lr):
     Nabla_W = np.dot(np.transpose(X), (Y-T))
     W[:] = W - lr * Nabla_W
