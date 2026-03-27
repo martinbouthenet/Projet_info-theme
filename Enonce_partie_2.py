@@ -13,6 +13,10 @@ def readdataset2d(fname):
     return np.array(X), T
 # %% Fonction convertit de la question 2
 def nb_classes(T):
+    """
+    fonction auxiliaire permettant de compter le nombre de classes du nuage de points
+    au lieu de le faire directement dans la fonction convertit
+    """
     K = 0
     s_classe = set()
     for i in range(len(T)):
@@ -22,6 +26,10 @@ def nb_classes(T):
     return K
 
 def convertit(T, K):
+    """
+    Transforme et renvoie la matrice T donnée en argument pour qu'elle soit de taille N,K
+    et que pour tout (i,j), T[i, j] soit égal à 1 si i est de classe j et 0 sinon
+    """
     N = T.shape[0]
     T_convertit = np.zeros((N, K))
     for i in range(N):
@@ -98,11 +106,11 @@ def updateWb(W, b, X, Y, T, lr):
     Nabla_b = (Y-T).sum(axis=0)
     b -= lr * Nabla_b
 
-def taux_precision(C, T):
+def taux_precision(Y, T):
     nb_pt = 0
-    for i in range(C.shape[0]):
-        for j in range(C.shape[1]):
-            if C[i,j] == T[i,j]:
+    for i in range(Y.shape[0]):
+        for j in range(Y.shape[1]):
+            if Y[i,j] == 1 and T[i,j] == 1:
                 nb_pt += 1
     return nb_pt / len(C)
 
