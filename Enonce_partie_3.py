@@ -50,9 +50,9 @@ def convolution1D(X,F):
     N = len(X)
     H = len(F)
     Z = []
-    for i in range(N-H+1):
+    for i in range(N-H+1): #pour tout entier i de 0 à N-H 
        somme = 0
-       for j in range(H):
+       for j in range(H):  #on somme pour h de 0 à H-1
           somme += X[i+H-(j+1)]*F[j]
        Z.append(somme)
     return Z
@@ -98,17 +98,22 @@ def convolution_2D(X, F):
     Dx, Dy = X.shape
     Hx, Hy = F.shape
     Z = np.zeros((Dx-Hx+1, Dy-Hy+1))
-    for i in range(Dx-Hx+1):
-           for j in range(Dy-Hy+1):
+    for i in range(Dx-Hx+1):  #pour tout entier i de 0 à Dx-Hx
+           for j in range(Dy-Hy+1): #pour tout entier j de 0 à Dy-Hy
                 somme = 0
-                for k in range(Hx):
-                    for l in range(Hy):
-                        somme += X[i+Hx-(k+1),j+Hy-(l+1)]*F[k,l]
+                for x in range(Hx):  
+                    for y in range(Hy):
+                        #on somme avec x compris entre 0 et Hx-1 et y compris entre 0 et Hy-1
+                        somme += X[i+Hx-(x+1),j+Hy-(y+1)]*F[x,y]  #on applique la formule
                 Z[i,j] = somme      
     return Z
 
 
 def applique_filtre(X, F):
+    """
+    Applique le filtre F donné en paramètres à l'image X donné en paramètres grâce à la fonction convolution_2D 
+    puis affiche l'image de base et l'image modifiée grâce à la fonction displayTwoImages  
+    """
     Z = convolution_2D(X, F)
     displayTwoImages(X, Z)
 
