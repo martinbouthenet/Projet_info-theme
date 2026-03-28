@@ -16,7 +16,7 @@ def readdataset2d(fname):
 def nb_classes(T):
     """
     Fonction auxiliaire permettant de compter le nombre de classes du nuage de points
-    au lieu de le faire directement dans la fonction convertit
+    au lieu de le faire directement dans la fonction convertit et renvoie K le nombre de classe
     """
     K = 0
     s_classe = set()
@@ -56,8 +56,7 @@ def softmax(A):
 
 # %% Question 4
 def predit_proba(X, W, b):
-    """On utilise la relation donné par l'énoncé 
-    pour obtenir la matrice de prédiction Y"""
+    """Fonction qui applique softmax a la matrice XW + b"""
     return softmax(np.dot(X, W) + b)
 
 # %% Question 5
@@ -179,6 +178,8 @@ def cross_entropy3(Y, T):
     return -J
 
 def predit_proba3(X, W, b):
+    """Fonction qui comme dit dans l'énoncé ne modifie pas les couches 
+    intermediaires et modifie la dernière couche avec softmax"""
     Z = [X]
     for i in range (len(b)-1):
         Z.append(sigma(Z[-1].dot(W[i])+b[i]))
@@ -197,6 +198,8 @@ def initialise3(dimensions) :
     return W,b,Y,Z,C
 
 def updateWb3(W, b, X, Z, Y, T, lr):
+    """Fonction qui entrainent les paramètres W et b (pris en paramètres) en utilisant les formules
+    de gradient à l'aide d'un lr (learning rate)"""
     delta_a_lenvers=[Y-T]
     for i in range (len(W)-1):
         W[-1-i] -= lr*(Z[-1-i].transpose()).dot(delta_a_lenvers[-1])
@@ -206,6 +209,8 @@ def updateWb3(W, b, X, Z, Y, T, lr):
     b[0] -= lr*sum(delta_a_lenvers[-1])
     
 def reseau(W, b, X, Z, Y, T, lr=0.1, nb_iter=100, int_affiche=10) :
+    """On applique l'algorithme du réseau de neurones dense avec notre
+    fonction predit_proba3, updateWb3 et cross_entropy3"""
     suite_erreur = [cross_entropy3(Y,T)]
     for i in range(nb_iter):
         updateWb3(W ,b ,X ,Z ,Y ,T ,lr)
