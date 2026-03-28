@@ -150,9 +150,13 @@ def predit_classe(Y):
                 C[i, j] = 0
     return C
 
-def taux_precision(C, T):
-    N = len(T)
-    return np.sum(np.equal(T, C))*100/N
+def taux_precision(Y, T):
+    nb_pt = 0
+    for i in range(Y.shape[0]):
+        for j in range(Y.shape[1]):
+            if Y[i,j] == 1 and T[i,j] == 1:
+                nb_pt += 1
+    return nb_pt / len(Y)
 
 def cross_entropy(Y, T):
     J = 0
@@ -299,14 +303,14 @@ C_train_final = predit_classe(Y)
 
 print('\nSituation initiale')
 print("Poids initiaux : ", W_init,b_init)
-print("Taux de précision initial= ", taux_precision(C_init, T_train))
+print("Taux de précision initial= ", taux_precision(C_init, T))
 print("Erreur d'entropie initiale :", suite_erreur[0])
 
 
 print('\nRésultats')
 print("Poids optimises :", W, b)
 print("Erreur d'entropie finale :", suite_erreur[-1])
-print("Taux de précision final = ", taux_precision(C_train_final, T_train))
+print("Taux de précision final = ", taux_precision(C_train_final, T))
 affichage(X_train, T_train, C_train_final)
 
 
