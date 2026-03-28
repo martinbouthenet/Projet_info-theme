@@ -163,7 +163,10 @@ def updateWb(W, b, X, Z, Y, T, lr):
     
 def reseau(W, b, X, Z, Y, T, lr=0.1, nb_iter=100, int_affiche=10):
     '''
-    Renvoie les erreurs d'entropie et affiche l'erreur tous les int_affiche
+    Cette fonction fais fonctionner toute la prédiction en liant les autres fonctions du programme.
+    Elle met nb_iter fois à jour les poids W et b donnés en paramètres, ainsi que les prédictions.
+    En plus des mises à jour, cette fonction calcule l'erreur d'entropie à chaque itération et l'ajoute à la liste suite_erreur, qu'elle renvoie ensuite.
+    Toutes les int_affiche itérations, la fonction affiche l'erreur d'entropie calculée.
     '''
     suite_erreur = [cross_entropy(Y,T)]
     for i in range(nb_iter):
