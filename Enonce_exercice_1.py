@@ -103,6 +103,8 @@ def initialise(dimensions):
     Avec la liste dimensions, on défini des liste W et b aléatoires 
     avec des Wi et bi de la bonne taille et avec des scalaires entre
     -2 et 2 pour les Wi et entre -0.5 et 0.5 pour les bi
+    On aurait pu prendre en argument X pour ne pas avoir à faire la 
+    distinction entre X_train et X_test au sein de la fonction
     '''
     # Initialise les poids W et b
     W=[]
@@ -113,22 +115,56 @@ def initialise(dimensions):
 
 
     # Initialisation les prediction Y et C on pourra passer de X_train à 
-    #X_test en commentant la prochaine ligne et décommentant celle d'après 
-    Z, Y = predit_proba(X_train, W, b)
-    #Z, Y = predit_proba(X_test, W, b)
+    #X_test en changeant la ligne commentée
+    
+    #Z, Y = predit_proba(X_train, W, b)
+    Z, Y = predit_proba(X_test, W, b)
     C = predit_classe(Y)
     return W, b, Z, Y, C
 
+# def updateWb(W, b, X, Z, Y, T, lr):
+#     '''
+#     Prends en paramètre W et b et les fait évoluer à l'aide de la
+#     formule d'entrainement grace aux classes, prédictions, données
+#     intermédiaires et d'un learning rate'
+#     '''
+#     delta_a_lenvers=[Y-T]    #On initialise une liste des deltas
+#     # On choisit ci-après de définir i de manière croissante puis de parcourir les liste de la fin vers le début
+#     for i in range (len(W)-1):    #Pour tout W sauf le premier terme qui est différent
+#         #On fait évoluer les W et les b:
+#         W[-1-i] -= lr*(Z[-1-i].transpose()).dot(delta_a_lenvers[-1])    
+#         b[-1-i] -= lr*sum(delta_a_lenvers[-1])
+#         #delta change de valeur donc on ajoute sa nouvelle valeur dans la liste des deltas
+#         delta_a_lenvers.append(np.dot(delta_a_lenvers[-1], W[-1-i].transpose())*Z[-1-i]*(1-Z[-1-i]))
+#     W[0] -= lr*(np.transpose(X)).dot(delta_a_lenvers[-1])
+#     b[0] -= lr*sum(delta_a_lenvers[-1])
+
 def updateWb(W, b, X, Z, Y, T, lr):
-    delta_a_lenvers=[Y-T]
-    for i in range (len(W)-1):
-        W[-1-i] -= lr*(Z[-1-i].transpose()).dot(delta_a_lenvers[-1])
-        b[-1-i] -= lr*sum(delta_a_lenvers[-1])
-        delta_a_lenvers.append(np.dot(delta_a_lenvers[-1], W[-1-i].transpose())*Z[-1-i]*(1-Z[-1-i]))
-    W[0] -= lr*(np.transpose(X)).dot(delta_a_lenvers[-1])
-    b[0] -= lr*sum(delta_a_lenvers[-1])
+    '''
+    Prends en paramètre W et b et les fait évoluer à l'aide de la
+    formule d'entrainement grace aux classes, prédictions, données
+    intermédiaires et d'un learning rate'
+    '''
+    delta = Y-T    #On initialise delta
+    # On choisit ci-après de définir i de manière croissante puis de parcourir les liste de la fin vers le début
+    for i in range (len(W)-1):    #Pour tout W sauf le premier terme qui est différent
+        #On fait évoluer les W et les b:
+        W[-1-i] -= lr*(Z[-1-i].transpose()).dot(delta)    
+        b[-1-i] -= lr*sum(delta)
+        #On change la valeure de delta pour modifier les autres W et b
+        delta = np.dot(delta, W[-1-i].transpose())*Z[-1-i]*(1-Z[-1-i])
+    
+    # On finit par modifier les premières valeurs qui ne marchent pas
+    # exactement de la même manière car celle de W évolue avec la 
+    # première classe qui est X et non plus une donnée intermédiaire Z
+    
+    W[0] -= lr*(np.transpose(X)).dot(delta)
+    b[0] -= lr*sum(delta)
     
 def reseau(W, b, X, Z, Y, T, lr=0.1, nb_iter=100, int_affiche=10):
+    '''
+    Renvoie les erreurs d'entropie et affiche l'erreur tous les int_affiche
+    '''
     suite_erreur = [cross_entropy(Y,T)]
     for i in range(nb_iter):
         updateWb(W ,b ,X ,Z ,Y ,T ,lr)
@@ -139,7 +175,7 @@ def reseau(W, b, X, Z, Y, T, lr=0.1, nb_iter=100, int_affiche=10):
             suite_erreur.append(erreur_iter)
     return suite_erreur
 
-#%% Q2
+#%% Question 2
 
 dimension_1=[2, 3, 3, 3, 1]
 dimension_2=[2, 7, 7, 7, 1]
@@ -151,26 +187,28 @@ dimension_7=[2, 20, 20, 1]
 dimension_8=[2,5,4,4,4,4,1]
 dimensions=[dimension_1,dimension_2,dimension_3,dimension_4,dimension_5,dimension_6,dimension_7,dimension_8]
 
+#On teste ici toutes les dimensions en même temps en faissant varier à la main les paramètres
+#On peut passer des données train à test en changeant les lignes commentées
 for i in range (8):
     W, b, Z_train, Y_train, C_train_init = initialise(dimensions[i])
     W_init = W.copy()
     b_init = b
 
-    suite_erreur = reseau(W, b, X_train, Z_train, Y_train, T_train, lr=0.001, nb_iter = 100000, int_affiche=1000)
-    #suite_erreur = reseau(W, b, X_test, Z_train, Y_train, T_test, lr=0.00001, nb_iter = 100, int_affiche=10)
+    #suite_erreur = reseau(W, b, X_train, Z_train, Y_train, T_train, lr=0.0005, nb_iter = 10000, int_affiche=100)
+    suite_erreur = reseau(W, b, X_test, Z_train, Y_train, T_test, lr=0.0006, nb_iter = 10000, int_affiche=100)
     C_train_final = predit_classe(Y_train)
 
     print('\nSituation initiale')
     print("Poids initiaux : ", W_init,b_init,)
-    print("Taux de précision initial= ", taux_precision(C_train_init, T_train))
-    #print("Taux de précision initial= ", taux_precision(C_train_init, T_test))
+    #print("Taux de précision initial= ", taux_precision(C_train_init, T_train))
+    print("Taux de précision initial= ", taux_precision(C_train_init, T_test))
     print("Erreur d'entropie initiale :", suite_erreur[0])
 
 
     print('\nRésultats')
     print("Poids optimises :", W, b)
     print("Erreur d'entropie finale :", suite_erreur[-1])
-    print("Taux de précision final = ", taux_precision(C_train_final, T_train))
-    #print("Taux de précision final = ", taux_precision(C_train_final, T_test))
-    affichage(X_train, T_train, C_train_final)
-    #affichage(X_test, T_test, C_train_final)
+    #print("Taux de précision final = ", taux_precision(C_train_final, T_train))
+    print("Taux de précision final = ", taux_precision(C_train_final, T_test))
+    #affichage(X_train, T_train, C_train_final)
+    affichage(X_test, T_test, C_train_final)
