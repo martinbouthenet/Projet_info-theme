@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -91,7 +92,6 @@ def initialise(D, K, X):
     W = np.random.uniform(-2, 2, size=(D, K)) #On initialise la matrice W de tzille (D,K)
     b = np.random.uniform(size=K)
     Y = predit_proba(X, W, b)
-    print(Y.shape)
     C_train = predit_classe(Y)
     return W, b, Y, C_train
     
@@ -120,6 +120,17 @@ def taux_precision(Y, T):
     return nb_pt / len(Y)
 
 #%% Exercice 3
+def convertit(T, K=5):
+    N = T.shape[0]
+    T_convertit = np.zeros((N, K))
+    for i in range(N):
+        for j in range(K):
+            if T[i, 0] == j:
+                T_convertit[i, j] = 1
+            else:
+                T_convertit[i, j] = 0
+    return T_convertit
+
 def sigma(x):
     return 1/(1+np.exp(-x))
 
@@ -137,7 +148,7 @@ def softmax(A):
     return B
 
 
-def predit_classe(Y):
+def predit_classe3(Y):
     """Pour obtenir la matrice C on utilise le principe énoncé en réponse à la question 5 du compte-rendu"""
     n, p = Y.shape
     C = np.zeros((n, p))
@@ -150,7 +161,7 @@ def predit_classe(Y):
                 C[i, j] = 0
     return C
 
-def taux_precision(Y, T):
+def taux_precision3(Y, T):
     nb_pt = 0
     for i in range(Y.shape[0]):
         for j in range(Y.shape[1]):
@@ -158,7 +169,7 @@ def taux_precision(Y, T):
                 nb_pt += 1
     return nb_pt / len(Y)
 
-def cross_entropy(Y, T):
+def cross_entropy3(Y, T):
     J = 0
     N = T.shape[0]
     K = T.shape[1]
@@ -167,36 +178,25 @@ def cross_entropy(Y, T):
             J += T[n, k] * np.log(Y[n, k])
     return -J
 
-def affichage(X, T, C):
-    fig,ax = plt.subplots(1,2, figsize = (15,7))
-    # Affichage des vrais classes
-    ax[0].scatter(X[:,0], X[:,1], c=T, s = 40)
-    ax[0].set_title("Classes réelles données par T")
-
-    # Affichage des prédictions
-    ax[1].scatter(X[:,0], X[:,1], c=C, s = 40)
-    ax[1].set_title("Classes prédites données par C")
-    plt.show()
-
-def predit_proba(X, W, b):
+def predit_proba3(X, W, b):
     Z = [X]
     for i in range (len(b)-1):
         Z.append(sigma(Z[-1].dot(W[i])+b[i]))
     Y = softmax(np.dot(Z[-1],W[-1])+b[-1])
     return Z, Y
 
-def initialise(dimensions) :
+def initialise3(dimensions) :
     global N
     W = []
     b = []
     for p in range(len(dimensions)-1) :
         W.append(np.random.uniform(-2,2,size=(dimensions[p],dimensions[p+1])))
         b.append(np.random.uniform(-0.5,0.5,size=(dimensions[p+1])))
-    Z,Y = predit_proba(X_train, W, b)
-    C = predit_classe(Y)
+    Z,Y = predit_proba3(X_train, W, b)
+    C = predit_classe3(Y)
     return W,b,Y,Z,C
 
-def updateWb(W, b, X, Z, Y, T, lr):
+def updateWb3(W, b, X, Z, Y, T, lr):
     delta_a_lenvers=[Y-T]
     for i in range (len(W)-1):
         W[-1-i] -= lr*(Z[-1-i].transpose()).dot(delta_a_lenvers[-1])
@@ -206,15 +206,16 @@ def updateWb(W, b, X, Z, Y, T, lr):
     b[0] -= lr*sum(delta_a_lenvers[-1])
     
 def reseau(W, b, X, Z, Y, T, lr=0.1, nb_iter=100, int_affiche=10) :
-    suite_erreur = [cross_entropy(Y,T)]
+    suite_erreur = [cross_entropy3(Y,T)]
     for i in range(nb_iter):
-        updateWb(W ,b ,X ,Z ,Y ,T ,lr)
-        Z[:], Y[:] = predit_proba(X, W, b) #Sans le [:], le tableau ne serait pas modifié
+        updateWb3(W ,b ,X ,Z ,Y ,T ,lr)
+        Z[:], Y[:] = predit_proba3(X, W, b) #Sans le [:], le tableau ne serait pas modifié
         if i % int_affiche == 0:
-            erreur_iter = cross_entropy(Y, T)
+            erreur_iter = cross_entropy3(Y, T)
             print("Erreur cross_entropy a l'iteration ", i+1 ," : " , erreur_iter)
             suite_erreur.append(erreur_iter)
     return suite_erreur
+
 
 # EXERCICE 2   
 # %% Import du jeu de données : probleme à 4 classes
@@ -242,8 +243,6 @@ print('\nRésultats')
 print("Poids optimises :", W, b)
 print("Erreur d'entropie finale :", suite_erreur[-1])
 print("Taux de précision final = ", taux_precision(C_train_final, T))
-print(N,K)
-
 # %% Import du jeu de données : probleme à 5 classes
 X_train, T_train = readdataset2d("probleme_5_classes")
 N, D = X_train.shape
@@ -284,35 +283,31 @@ plt.ylim(-6, 6) #On limite l'axe des y de -6 à 6
 plt.show()
         
 #%% Exercice 3 
-#Import du jeu de données : probleme à 6 classes
 X_train, T_train = readdataset2d("probleme_5_classes_dur")
 N, D = X_train.shape
-K = nb_classe(T_train) 
-T = convertit(T_train,K) #On réutilise les fonctions de l'exercice 2
 
 # Pour la visualisation, on garde T_train sous sa forme originelle
 plt.scatter(X_train[:, 0], X_train[:, 1], c=T_train, s=30)
 plt.show()
 
-dimensions5 = [2,15,15,3,5]
 
-W,b,Y,Z,C_init = initialise(dimensions5)
+dimension_5=[2, 15, 15, 3, 5]
+
+W,b,Y,Z,C_init = initialise3(dimension_5)
 W_init = W.copy()
 b_init = b.copy()
 
-suite_erreur = reseau_dense(W, b, X_train, Z, Y, T_train,lr=0.001,nb_iter=10000)
-C_train_final = predit_classe(Y)
+T = convertit(T_train)
+suite_erreur = reseau(W, b, X_train, Z, Y, T,lr=0.001,nb_iter=1000)
+C_train_final = predit_classe3(Y)
 
 print('\nSituation initiale')
 print("Poids initiaux : ", W_init,b_init)
-print("Taux de précision initial= ", taux_precision(C_init, T))
+print("Taux de précision initial= ", taux_precision3(C_init, T))
 print("Erreur d'entropie initiale :", suite_erreur[0])
 
 
 print('\nRésultats')
 print("Poids optimises :", W, b)
 print("Erreur d'entropie finale :", suite_erreur[-1])
-print("Taux de précision final = ", taux_precision(C_train_final, T))
-affichage(X_train, T_train, C_train_final)
-
-
+print("Taux de précision final = ", taux_precision3(C_train_final, T))
