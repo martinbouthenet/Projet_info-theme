@@ -61,7 +61,7 @@ def predit_proba(X, W, b):
 
 # %% Question 5
 def predit_classe(Y):
-    """Pour obtenir la matrice C on utilise le principe énoncé en question 5"""
+    """Pour obtenir la matrice C on utilise le principe énoncé en réponse à la question 5 du compte-rendu"""
     n, p = Y.shape
     C = np.zeros((n, p))
     l_max = Y.max(axis=1)
@@ -80,7 +80,7 @@ def regression_logistique(W, b, X, Y, T, lr=0.1, nb_iter=100, int_affiche=10):
     suite_erreur = []
     n = 0
     while n < nb_iter:
-        Y[:] = predit_proba(X, W, b)
+        Y[:] = predit_proba(X, W, b) #On utilise la relation donné par l'énoncé pour obtenir la matrice de prédiction Y
         updateWb(W, b, X, Y, T, lr)
         n += 1
         if n % int_affiche == 0:
@@ -96,7 +96,7 @@ def initialise(D, K, X):
     return W, b, Y, C_train
     
 def cross_entropy(Y, T):
-    """On calcule l'erreur d'entropie avec la formule donné par l'énoncé"""
+    """Fonction qui calcule l'erreur d'entropie avec la formule donné par l'énoncé"""
     J = 0
     N = T.shape[0]
     K = T.shape[1]
@@ -107,7 +107,7 @@ def cross_entropy(Y, T):
     
 def updateWb(W, b, X, Y, T, lr):
     Nabla_W = np.dot(np.transpose(X), (Y-T))
-    W[:] = W - lr * Nabla_W
+    W[:] = W - lr * Nabla_W #Sans le [:], le tableau ne serait pas modifié
     Nabla_b = (Y-T).sum(axis=0)#On prend en compte la nouvelle dimension de b 
     b -= lr * Nabla_b
 
@@ -119,11 +119,13 @@ def taux_precision(Y, T):
                 nb_pt += 1
     return nb_pt / len(Y)
 
-# Exercice 3
+#%% Exercice 3
 def sigma(x):
     return 1/(1+np.exp(-x))
 
 def softmax(A):
+    """Fonction qui prend en argument une matrice A de taille (n,p) et 
+    renvoie une matrice B tel que chaque ligne i de B soit le softmax de la ligne i de A"""
     n, p = A.shape
     B = np.zeros((n, p))
     for i in range(n):
@@ -136,6 +138,7 @@ def softmax(A):
 
 
 def predit_classe(Y):
+    """Pour obtenir la matrice C on utilise le principe énoncé en réponse à la question 5 du compte-rendu"""
     n, p = Y.shape
     C = np.zeros((n, p))
     l_max = Y.max(axis=1)
@@ -265,19 +268,19 @@ print("Erreur d'entropie finale :", suite_erreur[-1])
 print("Taux de précision final = ", taux_precision(C_train_final, T))
 
 x = np.linspace(-6, 6, 13)#On définit x une liste de -6 à 6 avec 13 éléments 
-y = np.linspace(-6, 6, 13)
-plt.scatter(X_train[:, 0], X_train[:, 1], c=T_train, s=30)
+y = np.linspace(-6, 6, 13)#On définit y une liste de -6 à 6 avec 13 éléments
+plt.scatter(X_train[:, 0], X_train[:, 1], c=T_train, s=30) # Pour la visualisation, on garde T_train sous sa forme originelle
 for i in range(K) :
     for j in range(i+1,K) :
         w = W[:,i] - W[:,j] 
         B = b[i] - b[j]
-        f = - (w[0]*x + B) / (w[1])
+        f = - (w[0]*x + B) / (w[1]) # On utilise la droite d'équation w1*x + w2*y + b = 0
         plt.plot(x,f)
 plt.ylim(-6, 6) #On limite l'axe des y de -6 à 6
 plt.show()
         
-# Exercice 3 
-# %% Import du jeu de données : probleme à 6 classes
+#%% Exercice 3 
+#Import du jeu de données : probleme à 6 classes
 X_train, T_train = readdataset2d("probleme_5_classes_dur")
 N, D = X_train.shape
 
@@ -306,31 +309,4 @@ print("Erreur d'entropie finale :", suite_erreur[-1])
 print("Taux de précision final = ", taux_precision(C_train_final, T_train))
 affichage(X_train, T_train, C_train_final)
 
-X_train, T_train = readdataset2d("probleme_5_classes_dur")
-N, D = X_train.shape
-
-# Pour la visualisation, on garde T_train sous sa forme originelle
-plt.scatter(X_train[:, 0], X_train[:, 1], c=T_train, s=30)
-plt.show()
-dimension_5=[2, 15, 15, 3, 5]
-
-W,b,Y,Z,C_init = initialise(dimension_5)
-W_init = W.copy()
-b_init = b.copy()
-
-T = convertit(T_train)
-suite_erreur = reseau(W, b, X_train, Z, Y, T,lr=0.001,nb_iter=1000)
-C_train_final = predit_classe(Y)
-print(C_train_final.shape,T_train.shape,X_train.shape)
-
-print('\nSituation initiale')
-print("Poids initiaux : ", W_init,b_init)
-print("Taux de précision initial= ", taux_precision(C_init, T_train))
-print("Erreur d'entropie initiale :", suite_erreur[0])
-
-
-print('\nRésultats')
-print("Poids optimises :", W, b)
-print("Erreur d'entropie finale :", suite_erreur[-1])
-print("Taux de précision final = ", taux_precision(C_train_final, T_train))
 
