@@ -287,6 +287,8 @@ plt.show()
 #Import du jeu de données : probleme à 6 classes
 X_train, T_train = readdataset2d("probleme_5_classes_dur")
 N, D = X_train.shape
+K = nb_classe(T_train) 
+T = convertit(T_train,K) #On réutilise les fonctions de l'exercice 2
 
 # Pour la visualisation, on garde T_train sous sa forme originelle
 plt.scatter(X_train[:, 0], X_train[:, 1], c=T_train, s=30)
